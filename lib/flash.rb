@@ -22,12 +22,11 @@ class Flash
   # automatically accesses @flash_now
 
   def now
-    @flash_now
+    @flash_now || {}
   end
 
   def [](key)
-    return @flash_now[key.to_s] if @flash_now.has_key?(key.to_s)
-    @flash_data[key.to_s]
+    @flash_now[key.to_s] || @flash_now[key.to_sym] || @flash_data[key.to_s]
   end
 
   def []=(key, val)
@@ -35,7 +34,9 @@ class Flash
   end
 
   def store_flash(res)
-    res.cookies << WEBrick::Cookie.new('_rails_lite_app_flash', @flash_data.to_json)
+    cookie = WEBrick::Cookie.new('_rails_lite_app_flash', @flash_data.to_json)
+    cookie.path = "/"
+    res.cookies << cookie
   end
 
 end
