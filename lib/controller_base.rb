@@ -9,7 +9,7 @@ class ControllerBase
   class DoubleRenderError < StandardError
   end
 
-  attr_reader :req, :res, :params
+  attr_reader :req, :res, :params, :flash
 
   # Setup the controller
   def initialize(req, res, route_params = {})
@@ -17,6 +17,7 @@ class ControllerBase
     @res = res
     @params = Params.new(req, route_params)
     @already_built_response = false
+    @flash = Flash.new(req)
   end
 
   def invoke_action(name)
@@ -40,6 +41,7 @@ class ControllerBase
     @res.status = 302
     @res.header["location"] = url
     session.store_session(res)
+    flash.store_flash(res)
   end
 
   # Populate the response with content.
@@ -51,6 +53,7 @@ class ControllerBase
     @res.body = content
     @already_built_response = true
     session.store_session(res)
+    flash.store_flash(res)
   end
 
   def render(template_name)

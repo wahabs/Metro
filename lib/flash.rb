@@ -3,30 +3,39 @@ require 'json'
 
 class Flash
 
-  def initialize
-    @flash = {}
-    @clear_upon_request = false
+  # flash class handles all clearing
+
+  def initialize(req)
+    flash_cookie = req.cookies.find { |cookie| cookie.name == '_rails_lite_app_flash' }
+    @flash_data = {}
+    @flash_now = {}
+
+    if flash_cookie
+      JSON.parse(flash_cookie.value).each do |key, val|
+        @flash_now[key] = val # if we get info from a cookie, we don't want to preserve it after this
+      end
+    end
+
   end
+
+  # The [] and []= methods only apply to the @flash, calling flash.now[:key]
+  # automatically accesses @flash_now
 
   def now
-    @clear_upon_request = true
-    self
-  end
-
-  def clear
-    self = self.class.new
+    @flash_now
   end
 
   def [](key)
-    @flash[key]
+    return @flash_now[key.to_s] if @flash_now.has_key?(key.to_s)
+    @flash_data[key.to_s]
   end
 
   def []=(key, val)
-    @flash[key] = val
+    @flash_data[key.to_s] = val # if we get info from a user (via controller) we want to store it into a cookie
   end
 
   def store_flash(res)
-    res.cookies << WEBrick::Cookie.new('')
+    res.cookies << WEBrick::Cookie.new('_rails_lite_app_flash', @flash_data.to_json)
   end
 
 end
