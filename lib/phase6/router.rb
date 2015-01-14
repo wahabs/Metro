@@ -1,7 +1,9 @@
 require "active_support"
-
+require 'byebug'
 module Phase6
+
   class Route
+
     attr_reader :pattern, :http_method, :controller_class, :action_name
 
     def initialize(pattern, http_method, controller_class, action_name)
@@ -13,7 +15,7 @@ module Phase6
 
     # checks if pattern matches path and method matches request method
     def matches?(req)
-      !!(req.path.match(pattern)) && (http_method == req.request_method.downcase.to_sym)
+      (http_method == req.request_method.downcase.to_sym) && !!(req.path.match(pattern))
     end
 
     # use pattern to pull out route params (save for later?)
@@ -30,6 +32,14 @@ module Phase6
   end
 
   class Router
+
+    # make each of these methods that when called add route
+    [:get, :post, :put, :delete].each do |http_method|
+      define_method(http_method) do |pattern, controller_class, action_name|
+        add_route(pattern, http_method, controller_class, action_name)
+      end
+    end
+
     attr_reader :routes
 
     def initialize
@@ -44,19 +54,22 @@ module Phase6
     # evaluate the proc in the context of the instance
     # for syntactic sugar :)
     def draw(&proc)
-    end
-
-    # make each of these methods that
-    # when called add route
-    [:get, :post, :put, :delete].each do |http_method|
+      instance_eval(&proc)
     end
 
     # should return the route that matches this request
     def match(req)
+      route = @routes.find { |route| route.matches?(req) }
     end
 
     # either throw 404 or call run on a matched route
     def run(req, res)
+       if match(req).nil?
+         res.status = 404
+       else
+         match(req).run(req, res)
+       end
     end
+
   end
 end
