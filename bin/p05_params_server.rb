@@ -1,4 +1,4 @@
-require 'active_support/core_ext'
+require "active_support"
 require 'webrick'
 require_relative '../lib/phase5/controller_base'
 
