@@ -1,16 +1,12 @@
 require 'webrick'
+require 'url_helper'
 require 'controller_base'
-require 'active_support'
 require 'router'
-require 'byebug'
 
-describe ControllerBase do
-
+describe Router do
+  subject(:router) { Router.new }
   before(:all) do
     class CatsController < ControllerBase
-      def index
-        @cats = ["GIZMO"]
-      end
     end
   end
   after(:all) { Object.send(:remove_const, "CatsController") }
@@ -19,57 +15,52 @@ describe ControllerBase do
   let(:res) { WEBrick::HTTPResponse.new(HTTPVersion: '1.0') }
   let(:cats_controller) { CatsController.new(req, res) }
 
-  describe "link_to and button_to" do
-    # before(:each) do
-    #   cats_controller.render(:index)
-    # end
-
-    it "generates a functional link" do
-      link = cats_controller.link_to "New cat!", "/cats/new"
-      link.should == "<a href=\"/cats/new\">New cat!</a>"
-    end
-
-    it "generates a functional button" do
-      
-    end
-
+  it 'registers url helper methods when route is added' do
+    router.get Regexp.new("^/cats$"), CatsController, :index
+    expect(cats_controller.cats_url).to eq("/cats")
   end
 
-  # describe "#render" do
-  #   before(:each) do
-  #     cats_controller.render(:index)
-  #   end
-  #
-  #   it "renders the html of the index view" do
-  #     cats_controller.res.body.should include("ALL THE CATS")
-  #     cats_controller.res.body.should include("<h1>")
-  #     cats_controller.res.content_type.should == "text/html"
-  #   end
-  #
-  #   describe "#already_built_response?" do
-  #     let(:cats_controller2) { CatsController.new(req, res) }
-  #
-  #     it "is false before rendering" do
-  #       cats_controller2.already_built_response?.should be false
-  #     end
-  #
-  #     it "is true after rendering content" do
-  #       cats_controller2.render(:index)
-  #       cats_controller2.already_built_response?.should be true
-  #     end
-  #
-  #     it "raises an error when attempting to render twice" do
-  #       cats_controller2.render(:index)
-  #       expect do
-  #         cats_controller2.render(:index)
-  #       end.to raise_error
-  #     end
-  #
-  #     it "captures instance variables from the controller" do
-  #       cats_controller2.index
-  #       cats_controller2.render(:index)
-  #       expect(cats_controller2.res.body).to include("GIZMO")
-  #     end
-  #   end
-  # end
+  it 'helper methods take arguments' do
+    router.get Regexp.new("^/cats/(<id>\\d+)/edit$"), CatsController, :edit
+    expect(cats_controller.edit_cat_url(7)).to eq("/cats/7/edit")
+  end
+end
+
+describe ControllerBase do
+  before(:all) do
+    class CatsController < ControllerBase
+    end
+  end
+  after(:all) { Object.send(:remove_const, "CatsController") }
+
+  let(:req) { WEBrick::HTTPRequest.new(Logger: nil) }
+  let(:res) { WEBrick::HTTPResponse.new(HTTPVersion: '1.0') }
+  let(:cats_controller) { CatsController.new(req, res) }
+
+  describe "#link_to" do
+    it "is added to controller class" do
+      expect(cats_controller).to respond_to(:link_to)
+    end
+
+    it 'returns a link' do
+      link_html = cats_controller.link_to("test link", "/cool/path")
+      expect(link_html).to eq("<a href='/cool/path'>test link</a>")
+    end
+  end
+
+  describe "#button_to" do
+    it "is added to controller class" do
+      expect(cats_controller).to respond_to(:button_to)
+    end
+
+    it 'returns a form with a button' do
+      link_html = cats_controller.button_to("test btn", "/cool/path")
+      expect(link_html).to eq("<form action='/cool/path' method='post'><input type='submit' value='test btn'></form>")
+    end
+
+    it 'returns a form with a button and method' do
+      link_html = cats_controller.button_to("test btn", "/cool/path", method: :patch)
+      expect(link_html).to eq("<form action='/cool/path' method='post'><input type='hidden' name='_method' value='patch'><input type='submit' value='test btn'></form>")
+    end
+  end
 end
