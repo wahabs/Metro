@@ -3,8 +3,11 @@ require 'erb'
 require_relative './session'
 require_relative './params'
 require_relative './flash'
+require_relative './url_helper'
 
 class ControllerBase
+
+  include URLHelper
 
   class DoubleRenderError < StandardError
   end
