@@ -64,7 +64,12 @@ class ControllerBase
   end
 
   def render(template_name)
-    controller_name = underscore(self.class.to_s)
+    # In case active support isn't cooperating
+    begin
+      controller_name = self.class.to_s.underscore
+    rescue NoMethodError
+      controller_name = underscore!(self.class.to_s)
+    end
     template = ERB.new(File.read("views/#{controller_name}/#{template_name}.html.erb"))
     content = template.result(binding)
     render_content(content, "text/html")
@@ -72,11 +77,10 @@ class ControllerBase
 
   private
 
-    # In case active support isn't cooperating
-    def underscore(camel_cased_word)
+    def underscore!(camel_cased_word)
       return camel_cased_word unless camel_cased_word =~ /[A-Z-]|::/
       word = camel_cased_word.to_s.gsub(/::/, '/')
-      word.gsub!(/(?:(?<=([A-Za-z\d]))|\b)(#{inflections.acronym_regex})(?=\b|[^a-z])/) { "#{$1 && '_'}#{$2.downcase}" }
+      #word.gsub!(/(?:(?<=([A-Za-z\d]))|\b)(#{inflections.acronym_regex})(?=\b|[^a-z])/) { "#{$1 && '_'}#{$2.downcase}" }
       word.gsub!(/([A-Z\d]+)([A-Z][a-z])/,'\1_\2')
       word.gsub!(/([a-z\d])([A-Z])/,'\1_\2')
       word.tr!("-", "_")

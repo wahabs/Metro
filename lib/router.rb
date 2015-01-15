@@ -9,6 +9,7 @@ class Route
     @http_method = http_method
     @controller_class = controller_class
     @action_name = action_name
+    add_url_helpers
   end
 
   # checks if pattern matches path and method matches request method
@@ -26,6 +27,17 @@ class Route
     controller_instance = controller_class.new(req, res, route_params)
     controller_instance.invoke_action(action_name)
   end
+
+  private
+
+    def add_url_helpers
+
+      # photos_url	            http://www.example-site.com/photos - index, create
+      # new_photo_url	          http://www.example-site.com/photos/new - new
+      # photo_url(@photo)	      http://www.example-site.com/photos/#{@photo.id} - show, update, destroy
+      # edit_photo_url(@photo)	http://www.example-site.com/photos/#{@photo.id}/edit - edit
+
+    end
 
 end
 
