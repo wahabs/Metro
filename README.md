@@ -17,6 +17,7 @@ Metro has much of Rails' MVC functionality, including:
 
 ### [Router][router]
 
+
 ### [Session][session]
 A Session instance takes in an HTTP Request, finds the cookie for the application, and deserializes it into a hash accessible by ControllerBase. `Session#store_session` serializes the hash into JSON, saves it to a new cookie, and adds it to the HTTP Response's cookies.
 
