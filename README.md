@@ -16,7 +16,7 @@ Metro has much of Rails' MVC functionality, including:
 ## Controller
 
 ### [Router][router]
-
+Two classes are defined in `router.rb`. A `Route` object matches a URL (e.g. `/users/:id`), to its corresponding controller (e.g. `UsersController`) and what method to run within that controller (e.g. `update`). Given an HTTPRequest, a `Router` determines which `Route` matches the requested URL. Once found, the `Route`'s controller is instantiated, and the appropriate method is run.
 
 ### [Session][session]
 A Session instance takes in an HTTP Request, finds the cookie for the application, and deserializes it into a hash accessible by ControllerBase. `Session#store_session` serializes the hash into JSON, saves it to a new cookie, and adds it to the HTTP Response's cookies.
