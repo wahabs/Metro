@@ -5,7 +5,7 @@ and a Controller Base class built with [Rails Active Support.](http://guides.rub
 
 Incorporates its own Object Relational Mapping System, called [Caboose.](https://github.com/wahabs/Caboose)
 
-Incorporates Rails controller functionality, including:
+Metro has much of Rails' MVC functionality, including:
 * Handling HTTP requests and responses
 * Storing sessions and route parameters
 * Rendering view templates
