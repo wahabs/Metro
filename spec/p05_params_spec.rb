@@ -1,6 +1,6 @@
 require 'webrick'
-require 'phase5/params'
-require 'phase5/controller_base'
+require 'phases/phase5/params'
+require 'phases/phase5/controller_base'
 
 describe Phase5::Params do
   before(:all) do
