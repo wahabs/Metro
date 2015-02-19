@@ -41,7 +41,6 @@ class ControllerBase
     @already_built_response
   end
 
-  # Set the response status code and header
   def redirect_to(url)
     raise DoubleRenderError.new "Already built response" if already_built_response?
     @already_built_response = true
@@ -51,9 +50,6 @@ class ControllerBase
     flash.store_flash(@res)
   end
 
-  # Populate the response with content.
-  # Set the response's content type to the given type.
-  # Raise an error if the developer tries to double render.
   def render_content(content, type)
     raise DoubleRenderError.new "Already built response" if already_built_response?
     @res.content_type = type

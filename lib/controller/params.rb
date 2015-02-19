@@ -1,12 +1,7 @@
 require 'uri'
 
 class Params
-  # uses initialize to merge params from
-  # 1. query string
-  # 2. post body
-  # 3. route params
-  #
-  # Route params should be passed in as a hash to `Params.new` as below:
+
   def initialize(req, route_params = {})
     @params = parse_www_encoded_form(req.query_string)
     @params = @params.merge(parse_www_encoded_form(req.body))
