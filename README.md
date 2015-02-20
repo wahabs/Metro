@@ -36,7 +36,7 @@ Defines a special hash that allows preservation of data after a controller actio
 Defines the parent class for controllers and includes the classes above. Each controller is initialized with an HTTP response and
 request, along with any route params. The primary methods are:
 * `redirect_to(url)`: Sets the response header as the `url` and the status code to 302 (Found). Stores any sessions and/or Flashes.
-* `render(template_name)`: Instantiates an instance of [ERB](http://ruby-doc.org/stdlib-2.2.0/libdoc/erb/rdoc/ERB.html) analagous to the controller, binding
+* `render(template_name)`: Instantiates an [ERB](http://ruby-doc.org/stdlib-2.2.0/libdoc/erb/rdoc/ERB.html) analagous to the controller, binding
 any variables passed in. Calls `render_content` to create an HTML view.
 * `render_content(content, type)`: Populates the response with content, sets the response's content type to the given type, and raises an error if the developer tries to double render.
 
